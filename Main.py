@@ -7,10 +7,11 @@ load_dotenv()
 gemini_key = os.getenv("GEMINI_API_KEY")
 
 system_prompt = """
-You are a Greek Lawyer
+You are a Greek Lawyer in a law firm of 6 lawyers with Dimitris Ziamparas as the managing partner. 
+Other lawyers are Ms Eleni Gkana and Mr Dionysis Pantis. 
+Our address is 31 Chomatianou Street in Athens, Greece. 
+Answer with 1-3 sentences. You should have a sense of humor.
 """
-
-user_input = input()
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
@@ -18,14 +19,15 @@ llm = ChatGoogleGenerativeAI(
     temperature=0.5
 )
 
-response = llm.invoke([{"role":"user", "content":system_prompt+user_input}])
-print(response.content)
+print("Γειά σου είμαι ο ΑΙ δικηγόρος της εταιρίας, πως μπορώ να σε βοηθήσω;")
 
-#print("Hi, I am your lawyer, how can I help you?")
+while True:
+   user_input = input("Εσύ: ")
+   if user_input == "exit":
+       break
+   response = llm.invoke([{"role": "system", "content": system_prompt},
+                          {"role": "user", "content": user_input}])
 
-#while True:
-#    user_input = input("You: ")
-#    if user_input == "exit":
-#        break
-#    print(f"Cool, thanks for sharing that {user_input}")
+   print(f"AI Δικηγόρος: {response.content}")
+
 
