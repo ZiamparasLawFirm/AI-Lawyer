@@ -45,25 +45,38 @@ chain = prompt | llm | StrOutputParser()
 
 print("Eίμαι ο ΑΙ δικηγόρος της εταιρίας, πως μπορώ να σε βοηθήσω;")
 
-history = []
+def chat(user_input, hist):
+    langchain_history = []
+    for item in hist:
+        if item["role"] == "user":
+            langchain_history.append(HumanMessage(content=item["content"]))
+        elif item["role"] == "assistant":
+            langchain_history.append(AIMessage(content=item["content"]))
 
-while True:
-   user_input = input("Εσύ: ")
-   if user_input == "exit":
-       break
-   response = chain.invoke({"input": user_input, "history": history})
-   print(f"AI Δικηγόρος: {response}")
-   history.append(HumanMessage(content=user_input))
-   history.append(AIMessage(content=response))
+        response = chain.invoke({"input": user_input, "history": langchain_history})
+
+        return "", hist +[{"role":"user", "content": user_input},
+                          {"role":"assistant", "content": response}]
 
 page = gr.Blocks(
     title="Συζητήστε με τον AI Δικηγόρο μας",
-    theme=gr.theme.soft()
+    theme=gr.themes.Soft()
 )
 
 with page:
     gr.Markdown(
         """
-        
+        # Συζητήστε με τον AI Δικηγόρο μας
+        Καλωσήλθατε στην συζήτηση με τον AI Δικηγόρο μας! 
         """
     )
+
+    chatbot = gr.Chatbot(type="messages")
+
+    msg = gr.Textbox()
+
+    msg.submit(chat, [msg, chatbot], [msg, chatbot])
+
+    clear = gr.Button("Clear Chat")
+
+    page.launch(share=True)
