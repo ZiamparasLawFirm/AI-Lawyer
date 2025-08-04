@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import gradio as gr
 
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -55,4 +56,14 @@ while True:
    history.append(HumanMessage(content=user_input))
    history.append(AIMessage(content=response))
 
+page = gr.Blocks(
+    title="Συζητήστε με τον AI Δικηγόρο μας",
+    theme=gr.theme.soft()
+)
 
+with page:
+    gr.Markdown(
+        """
+        
+        """
+    )
