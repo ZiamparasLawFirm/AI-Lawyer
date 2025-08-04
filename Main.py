@@ -58,6 +58,10 @@ def chat(user_input, hist):
         return "", hist +[{"role":"user", "content": user_input},
                           {"role":"assistant", "content": response}]
 
+def clear_chat():
+    return "", []
+
+
 page = gr.Blocks(
     title="Συζητήστε με τον AI Δικηγόρο μας",
     theme=gr.themes.Soft()
@@ -71,12 +75,16 @@ with page:
         """
     )
 
-    chatbot = gr.Chatbot(type="messages")
+    chatbot = gr.Chatbot(type='messages',
+                         avatar_images=[None, 'AI Δικηγόρος.png'],
+                         show_label=False)
 
-    msg = gr.Textbox()
+    msg = gr.Textbox(show_label=False,
+                     placeholder="Ρώτα τον AI Δικηγόρο οτιδήποτε . . .")
 
     msg.submit(chat, [msg, chatbot], [msg, chatbot])
 
-    clear = gr.Button("Clear Chat")
+    clear = gr.Button("Ξεκίνα την συζήτηση από την αρχή", variant="Secondary")
+    clear.click(clear_chat, outputs=[msg, chatbot])
 
     page.launch(share=True)
