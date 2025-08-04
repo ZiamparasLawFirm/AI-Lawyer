@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
@@ -30,6 +31,13 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=gemini_key,
     temperature=0.5
 )
+prompt = ChatPromptTemplate.from_messages(
+    ("system", system_prompt),
+    (MessagesPlaceholder(variable_name="history")),
+    ("user", "{input}")
+)
+
+chain = llm.chain(prompt)
 
 print("Eίμαι ο ΑΙ δικηγόρος της εταιρίας, πως μπορώ να σε βοηθήσω;")
 
