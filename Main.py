@@ -39,8 +39,9 @@ while True:
    if user_input == "exit":
        break
    history.append({"role": "user", "content": user_input})
-   print(history)
-   response = llm.invoke([{"role": "system", "content": system_prompt}])
+   print("History:", history)
+   response = llm.invoke([{"role": "system", "content": system_prompt}] + history)
+   print(response)
 
    print(f"AI Δικηγόρος: {response.content}")
 
