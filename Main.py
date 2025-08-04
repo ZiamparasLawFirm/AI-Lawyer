@@ -1,5 +1,8 @@
 from dotenv import load_dotenv
 import os
+
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -31,13 +34,13 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=gemini_key,
     temperature=0.5
 )
-prompt = ChatPromptTemplate.from_messages(
+prompt = ChatPromptTemplate.from_messages([
     ("system", system_prompt),
     (MessagesPlaceholder(variable_name="history")),
-    ("user", "{input}")
+    ("user", "{input}")]
 )
 
-chain = llm.chain(prompt)
+chain = prompt | llm | StrOutputParser()
 
 print("Eίμαι ο ΑΙ δικηγόρος της εταιρίας, πως μπορώ να σε βοηθήσω;")
 
@@ -47,12 +50,9 @@ while True:
    user_input = input("Εσύ: ")
    if user_input == "exit":
        break
-   history.append({"role": "user", "content": user_input})
-   print("History:", history)
-   response = llm.invoke([{"role": "system", "content": system_prompt}] + history)
-   print(response)
-
-   print(f"AI Δικηγόρος: {response.content}")
-   history.append({"role": "assistant", "content": "response.content"})
+   response = chain.invoke({"input": user_input, "history": history})
+   print(f"AI Δικηγόρος: {response}")
+   history.append(HumanMessage(content=user_input))
+   history.append(AIMessage(content=response))
 
 
